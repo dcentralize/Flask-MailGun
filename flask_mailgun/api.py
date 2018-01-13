@@ -4,6 +4,7 @@ Created on Thur Apr 20 13:56:10 2017
 
 @author: richard.mathie@amey.co.uk
 """
+import logging
 import requests
 # For verification with the MailgunAPI
 import hashlib
@@ -27,6 +28,7 @@ class MailGunAPI(object):
                                   MAILGUN_API_URL)
         self.route = config.get('MAILGUN_ROUTE', 'uploads')
         self.host = config.get('MAILGUN_HOST', self.domain)
+        self.disabled = config.get('MAIL_DISABLED', False)
         self.dest = '/messages/'
         if self.api_key is None:
             raise MailGunException("No mailgun key supplied.")
@@ -48,11 +50,20 @@ class MailGunAPI(object):
         files = [(a.disposition, (a.filename, a.data))
                  for a in message.attachments]
 
-        responce = requests.post(self.sendpoint,
-                                 auth=self.auth,
-                                 data=mesage_data,
-                                 files=files)
-        responce.raise_for_status()
+        if self.disabled:
+            logger = logging.getLogger(__name__)
+            # logger.setLevel(logging.INFO)
+            logger.info("aAFSDFSDFSDf")
+
+            print("%s: disabled mode: Would have sent '%s' to '%s'" % (__name__, message.body, message.send_to))
+
+            responce = requests.Response()
+        else:
+            responce = requests.post(self.sendpoint,
+                                     auth=self.auth,
+                                     data=mesage_data,
+                                     files=files)
+            responce.raise_for_status()
         return responce
 
     def send_message(self, *args, **kwargs):
