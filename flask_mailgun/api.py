@@ -28,7 +28,7 @@ class MailGunAPI(object):
                                   MAILGUN_API_URL)
         self.route = config.get('MAILGUN_ROUTE', 'uploads')
         self.host = config.get('MAILGUN_HOST', self.domain)
-        self.disabled = config.get('MAIL_DISABLED', False)
+        self.disabled = config.get('MAIL_DISABLED', False) or config.get('FLASK_MAILGUN_MAIL_DISABLED', False)
         self.dest = '/messages/'
         if self.api_key is None:
             raise MailGunException("No mailgun key supplied.")
