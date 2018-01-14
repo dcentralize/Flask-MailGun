@@ -58,7 +58,7 @@ class MailGunAPI(object):
             print('------------------------------------------------')
             print('%s: mail disabled, not sending message.' % (__name__))
             print("  To: '%s'" % message.send_to)
-            print("  Title '%s'" % (message.title))
+            print("  Subject '%s'" % (message.subject))
             print("  Body: '%s'" % (message.body))
             print('------------------------------------------------')
 
