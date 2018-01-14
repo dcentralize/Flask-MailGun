@@ -51,11 +51,16 @@ class MailGunAPI(object):
                  for a in message.attachments]
 
         if self.disabled:
-            logger = logging.getLogger(__name__)
-            # logger.setLevel(logging.INFO)
-            logger.info("aAFSDFSDFSDf")
+            # TODO: log to logging also?
+            # logger = logging.getLogger(__name__)
+            # logger.info("aAFSDFSDFSDf")
 
-            print("%s: disabled mode: Would have sent '%s' to '%s'" % (__name__, message.body, message.send_to))
+            print('------------------------------------------------')
+            print('%s: mail disabled, not sending message.' % (__name__))
+            print("  To: '%s'" % message.send_to)
+            print("  Title '%s'" % (message.title))
+            print("  Body: '%s'" % (message.body))
+            print('------------------------------------------------')
 
             responce = requests.Response()
         else:
