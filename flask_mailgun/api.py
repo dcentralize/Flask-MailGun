@@ -59,7 +59,17 @@ class MailGunAPI(object):
             print('%s: mail disabled, not sending message.' % (__name__))
             print("  To: '%s'" % message.send_to)
             print("  Subject '%s'" % (message.subject))
-            print("  Body: '%s'" % (message.body))
+            if message.attachments:
+                print("  Attachments:")
+                for f_obj in files:
+                    f_dispo = f_obj[0]
+                    f_name = f_obj[1][0]
+                    f_data = f_obj[1][1]
+                    print('    %s:%s' % (f_dispo, f_name))
+                    # only show 1000 chars
+                    print(f_data[:2000])
+            print("  Body:")
+            print(message.body)
             print('------------------------------------------------')
 
             responce = requests.Response()
