@@ -4,6 +4,7 @@ Created on Thur Apr 20 13:56:10 2017
 
 @author: richard.mathie@amey.co.uk
 """
+import logging
 import requests
 # For verification with the MailgunAPI
 import hashlib
@@ -27,6 +28,7 @@ class MailGunAPI(object):
                                   MAILGUN_API_URL)
         self.route = config.get('MAILGUN_ROUTE', 'uploads')
         self.host = config.get('MAILGUN_HOST', self.domain)
+        self.disabled = config.get('MAIL_DISABLED', False) or config.get('FLASK_MAILGUN_MAIL_DISABLED', False)
         self.dest = '/messages/'
         if self.api_key is None:
             raise MailGunException("No mailgun key supplied.")
@@ -48,11 +50,35 @@ class MailGunAPI(object):
         files = [(a.disposition, (a.filename, a.data))
                  for a in message.attachments]
 
-        responce = requests.post(self.sendpoint,
-                                 auth=self.auth,
-                                 data=mesage_data,
-                                 files=files)
-        responce.raise_for_status()
+        if self.disabled:
+            # TODO: log to logging also?
+            # logger = logging.getLogger(__name__)
+            # logger.info("aAFSDFSDFSDf")
+
+            print('------------------------------------------------')
+            print('%s: mail disabled, not sending message.' % (__name__))
+            print("  To: '%s'" % message.send_to)
+            print("  Subject '%s'" % (message.subject))
+            if message.attachments:
+                print("  Attachments:")
+                for f_obj in files:
+                    f_dispo = f_obj[0]
+                    f_name = f_obj[1][0]
+                    f_data = f_obj[1][1]
+                    print('    %s:%s' % (f_dispo, f_name))
+                    # only show 1000 chars
+                    print(f_data[:2000])
+            print("  Body:")
+            print(message.body)
+            print('------------------------------------------------')
+
+            responce = requests.Response()
+        else:
+            responce = requests.post(self.sendpoint,
+                                     auth=self.auth,
+                                     data=mesage_data,
+                                     files=files)
+            responce.raise_for_status()
         return responce
 
     def send_message(self, *args, **kwargs):
